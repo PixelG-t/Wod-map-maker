@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Editor settings and recovery files
+wod_editor_settings.json
+wod_editor_recovery.png
+wod_editor_recovery_info.json
+
+# User maps (optional - comment out if you want to track them)
+*.png
+!screenshot.png
+
+# OS
+.DS_Store
+Thumbs.db
