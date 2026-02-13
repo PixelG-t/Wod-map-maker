@@ -184,7 +184,7 @@ MIT License - feel free to use in your projects!
 
 ## Changelog
 
-### Version 2.0 (Enhanced Edition)
+### Version 2.0 
 - Added multi-layer overlay system
 - New modern gradient UI
 - Minimap navigation
