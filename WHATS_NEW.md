@@ -170,4 +170,4 @@ Found a bug? Have an idea? Want to share your Easter egg discoveries?
 Remember: Art is supposed to be fun. That's why we added easter eggs and animations to make your creative process more enjoyable!
 
 **Version 2.5** - "The Fun Update"
-Created with ❤️ by wowthat & enhanced by SuperAgent
+Created with ❤️ by wowthat
