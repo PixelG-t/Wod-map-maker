@@ -6,12 +6,12 @@ Your progress is tracked in the top-right corner of the editor screen.
 
 ---
 
-## 🎮 Classic Gaming Reference
+##  Classic Gaming Reference
 
 ### #1: Konami Code
 **How to unlock:** Enter the classic code: ↑ ↑ ↓ ↓ ← → ← → B A
 **Reward:** 🎉 **Party Mode** - Confetti particles for 15 seconds!
-**Difficulty:** ⭐⭐☆☆☆
+**Difficulty:** ⭐⭐
 
 ---
 
@@ -20,24 +20,24 @@ Your progress is tracked in the top-right corner of the editor screen.
 ### #2: Corner Master
 **How to unlock:** Click all 4 corners of the canvas in clockwise order (top-left → top-right → bottom-right → bottom-left) within 10 seconds
 **Reward:** 🕺 **Disco Mode** - Rainbow color cycling for 10 seconds!
-**Difficulty:** ⭐⭐⭐☆☆
+**Difficulty:** ⭐⭐⭐
 
 ### #6: Nice Coordinates
 **How to unlock:** Right-click at exactly **(69, 420)**
 **Reward:** 😎 Message: "Nice coordinates, nice!"
-**Difficulty:** ⭐⭐☆☆☆
+**Difficulty:** ⭐⭐
 **Tip:** Watch the status bar for your current coordinates
 
 ### #10: The Center
 **How to unlock:** Middle-click exactly in the center of your canvas
 **Reward:** 🟢 **Matrix Mode** - Green code rain effect!
-**Difficulty:** ⭐⭐⭐☆☆
+**Difficulty:** ⭐⭐⭐
 **Tip:** For a 1000x1000 canvas, the center is at (500, 500)
 
 ### #15: Devil's Coordinates
 **How to unlock:** Click at **(666, 666)**
-**Reward:** 😈 **Inverted Mode** - Colors flip for 8 seconds!
-**Difficulty:** ⭐⭐⭐⭐☆
+**Reward:**  **Inverted Mode** - Colors flip for 8 seconds!
+**Difficulty:** ⭐⭐⭐⭐
 
 ### #16: 1337 H4X0R
 **How to unlock:** Click at coordinates containing 1337 in various forms:
@@ -45,12 +45,12 @@ Your progress is tracked in the top-right corner of the editor screen.
 - (13, 37)
 - (133, 7)
 **Reward:** 😎 Message: "1337 H4X0R! You speak the ancient tongue!"
-**Difficulty:** ⭐⭐☆☆☆
+**Difficulty:** ⭐⭐
 
 ### #22: Palindrome Perfection
 **How to unlock:** Right-click at matching palindrome coordinates like (121, 121), (111, 111), (101, 101), etc.
 **Reward:** 🔄 Message: "Perfect symmetry!"
-**Difficulty:** ⭐⭐⭐☆☆
+**Difficulty:** ⭐⭐⭐
 
 ---
 
@@ -59,18 +59,18 @@ Your progress is tracked in the top-right corner of the editor screen.
 ### #3: The Answer to Everything
 **How to unlock:** Set brush size to exactly **42**
 **Reward:** 🌌 Message: "You found the Answer to Life, the Universe, and Everything!"
-**Difficulty:** ⭐☆☆☆☆
+**Difficulty:** ⭐
 **Tip:** Use [ and ] keys to adjust brush size precisely
 
 ### #11: Fibonacci Spiral
 **How to unlock:** Set brush to a Fibonacci number (13, 21, 34, 55, or 89)
 **Reward:** 🌀 Message: "Nature's perfect spiral!"
-**Difficulty:** ⭐⭐☆☆☆
+**Difficulty:** ⭐⭐
 
 ### #17: Binary Perfection
 **How to unlock:** Set brush to a power of 2 (16, 32, or 64)
 **Reward:** 💾 Message: "Computer-perfect!"
-**Difficulty:** ⭐⭐☆☆☆
+**Difficulty:** ⭐⭐
 
 ---
 
@@ -79,18 +79,17 @@ Your progress is tracked in the top-right corner of the editor screen.
 ### #4: Rainbow Sequence
 **How to unlock:** Select terrains in this exact order: **Water → Plains → Mountain → Forest** (keys 7, 1, 4, 2)
 **Reward:** 🌈 **Rainbow Mode** - Permanent rainbow brush effect!
-**Difficulty:** ⭐⭐☆☆☆
+**Difficulty:** ⭐⭐
 
 ### #9: True Dedication
 **How to unlock:** Paint continuously for **30 seconds** without releasing the mouse
 **Reward:** 🎨 Message: "True artist dedication!"
-**Difficulty:** ⭐⭐⭐⭐☆
+**Difficulty:** ⭐⭐⭐⭐
 
 ### #21: Rainbow Painter
 **How to unlock:** Use all 8 terrain types to paint in a single session
 **Reward:** 🎨 Message: "You've used all terrain types!"
-**Difficulty:** ⭐⭐☆☆☆
-
+**Difficulty:** ⭐⭐
 ---
 
 ## ⚙️ Tool Mastery
@@ -98,7 +97,7 @@ Your progress is tracked in the top-right corner of the editor screen.
 ### #13: Tool Master
 **How to unlock:** Cycle through all 7 tools (use each at least once: B, E, F, R, L, C, P)
 **Reward:** ✨ **Sparkle Mode** - Sparkles everywhere for 10 seconds!
-**Difficulty:** ⭐⭐☆☆☆
+**Difficulty:** ⭐⭐
 
 ---
 
@@ -107,19 +106,19 @@ Your progress is tracked in the top-right corner of the editor screen.
 ### #5: Pi Precision
 **How to unlock:** Zoom to exactly **3.14x** using + and - keys
 **Reward:** 🥧 Message: "Mathematical artist!"
-**Difficulty:** ⭐⭐⭐☆☆
+**Difficulty:** ⭐⭐⭐
 **Tip:** Zoom level is shown in the status bar
 
 ### #14: Zoom Maniac
 **How to unlock:** Zoom in/out rapidly **15 times** (each zoom within 300ms of previous)
 **Reward:** 🔍 **Screen Shake Mode** - 5 seconds of shaking!
-**Difficulty:** ⭐⭐⭐⭐☆
+**Difficulty:** ⭐⭐⭐⭐
 **Tip:** Spam + and - keys quickly!
 
 ### #19: Golden Ratio
 **How to unlock:** Zoom to exactly **1.618x** (phi - the golden ratio)
 **Reward:** ✨ Message: "Phi-nomenal!"
-**Difficulty:** ⭐⭐⭐⭐☆
+**Difficulty:** ⭐⭐⭐⭐
 
 ---
 
@@ -128,12 +127,11 @@ Your progress is tracked in the top-right corner of the editor screen.
 ### #7: Undo Master
 **How to unlock:** Press Ctrl+Z **10 times rapidly** (within 500ms each)
 **Reward:** ⏪ Message: "Are you sure about that?"
-**Difficulty:** ⭐⭐⭐☆☆
-
+**Difficulty:** ⭐⭐⭐
 ### #18: Save Master
 **How to unlock:** Save 5 times within 10 seconds (Ctrl+S)
 **Reward:** 💾 Message: "Better safe than sorry!"
-**Difficulty:** ⭐⭐☆☆☆
+**Difficulty:** ⭐⭐
 
 ---
 
@@ -142,18 +140,18 @@ Your progress is tracked in the top-right corner of the editor screen.
 ### #8: Lucky 7 Layers
 **How to unlock:** Have exactly **7 overlay layers** loaded at once
 **Reward:** 🍀 Message: "You're a layer legend!"
-**Difficulty:** ⭐⭐☆☆☆
+**Difficulty:** ⭐⭐
 **Tip:** Use Ctrl+O to add layers
 
 ### #12: Perfect Square
 **How to unlock:** Create a square canvas (same width and height)
-**Reward:** ⬛ Message: "So symmetrical!"
-**Difficulty:** ⭐☆☆☆☆
+**Reward:**  Message: "So symmetrical!"
+**Difficulty:** ⭐
 
 ### #20: Meme Canvas
 **How to unlock:** Create a canvas with 420 or 69 in the dimensions
 **Reward:** 😂 Message: "MEME CANVAS DETECTED!"
-**Difficulty:** ⭐☆☆☆☆
+**Difficulty:** ⭐
 **Examples:** 420x420, 69x69, 420x600, 800x69, etc.
 
 ---
@@ -171,10 +169,10 @@ Your progress is tracked in the top-right corner of the editor screen.
 
 ## 🏆 Achievement Levels
 
-- **0-7 eggs**: 🥚 Easter Egg Apprentice
-- **8-14 eggs**: 🐰 Easter Egg Hunter
-- **15-20 eggs**: 🔥 Easter Egg Master
-- **All 21 eggs**: 🏆 LEGENDARY EASTER EGG COMPLETIONIST!
+- **0-7 eggs**: Easter Egg Apprentice
+- **8-14 eggs**: Easter Egg Hunter
+- **15-20 eggs**:  aster Egg Master
+- **All 21 eggs**: LEGENDARY EASTER EGG COMPLETIONIST!
 
 ---
 
