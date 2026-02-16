@@ -4,6 +4,7 @@ UI rendering for WoD Map Editor
 
 import pygame
 import math
+import random
 
 def draw_rounded_rect(surface, color, rect, radius=8, border=0, border_color=None):
     """Draw a rounded rectangle with optional border"""
@@ -35,6 +36,104 @@ def draw_shadow(surface, rect, offset=4, alpha=30):
         shadow_rect = pygame.Rect(i, i, rect.width + (offset-i)*2, rect.height + (offset-i)*2)
         pygame.draw.rect(shadow, (0, 0, 0, a), shadow_rect, border_radius=12)
     surface.blit(shadow, (rect.x - offset, rect.y - offset))
+
+def draw_welcome_screen(screen, width, height, colors, font_large, font, small_font, tiny_font, alternate=False):
+    """Animated welcome screen with Easter egg variant"""
+    screen.fill(colors['bg'])
+
+    mx, my = pygame.mouse.get_pos()
+    time = pygame.time.get_ticks() / 1000
+
+    if alternate:
+        # ALTERNATE EASTER EGG WELCOME SCREEN
+        # Animated rainbow title
+        for i, char in enumerate("WOD MAP MAKER"):
+            color_offset = i * 0.5 + time
+            r = int(127 + 127 * math.sin(color_offset))
+            g = int(127 + 127 * math.sin(color_offset + 2))
+            b = int(127 + 127 * math.sin(color_offset + 4))
+            char_surf = font_large.render(char, True, (r, g, b))
+            x_offset = width // 2 - 200 + i * 40
+            y_offset = 150 + 20 * math.sin(time * 2 + i * 0.3)
+            screen.blit(char_surf, (x_offset, y_offset))
+
+        # Animated subtitle
+        subtitle = font.render("✨ You got the special edition! ✨", True, colors['accent_hover'])
+        subtitle_y = 250 + 10 * math.sin(time * 3)
+        screen.blit(subtitle, (width // 2 - subtitle.get_width() // 2, subtitle_y))
+
+        # Floating particles
+        for i in range(20):
+            particle_x = (width // 2 + 300 * math.sin(time + i)) % width
+            particle_y = (200 + i * 30 + time * 50) % height
+            particle_size = 3 + 2 * math.sin(time * 2 + i)
+            color = ((i * 30) % 255, (i * 50) % 255, (i * 70) % 255)
+            pygame.draw.circle(screen, color, (int(particle_x), int(particle_y)), int(particle_size))
+
+    else:
+        # STANDARD WELCOME SCREEN
+        # Animated title with glow effect
+        title_y = 180
+        title_scale = 1.0 + 0.05 * math.sin(time * 2)
+
+        # Glow effect
+        for offset in range(5, 0, -1):
+            alpha = 50 - offset * 10
+            glow_surf = pygame.Surface((width, height), pygame.SRCALPHA)
+            glow_text = font_large.render("WOD MAP MAKER", True, (*colors['accent'], alpha))
+            glow_rect = glow_text.get_rect(center=(width // 2, title_y))
+            glow_surf.blit(glow_text, glow_rect)
+            screen.blit(glow_surf, (0, 0))
+
+        # Main title
+        title = font_large.render("WOD MAP MAKER", True, colors['text'])
+        title_rect = title.get_rect(center=(width // 2, title_y))
+        screen.blit(title, title_rect)
+
+        # Animated subtitle
+        subtitle = font.render("Enhanced Edition v2.0", True, colors['accent'])
+        subtitle_y = title_y + 50 + 5 * math.sin(time * 3)
+        subtitle_rect = subtitle.get_rect(center=(width // 2, subtitle_y))
+        screen.blit(subtitle, subtitle_rect)
+
+    # Continue button
+    btn_y = height - 200
+    btn_w = 300
+    btn_h = 60
+    btn = pygame.Rect(width // 2 - btn_w // 2, btn_y, btn_w, btn_h)
+    hover = btn.collidepoint(mx, my)
+
+    # Animated button
+    if hover:
+        btn_offset = 5 * math.sin(time * 10)
+        draw_shadow(screen, btn, offset=int(6 + btn_offset), alpha=40)
+        draw_rounded_rect(screen, colors['accent_hover'], btn, radius=15)
+    else:
+        draw_shadow(screen, btn, offset=4, alpha=30)
+        draw_rounded_rect(screen, colors['accent'], btn, radius=15)
+
+    pygame.draw.rect(screen, colors['border_light'], btn, 2, border_radius=15)
+
+    btn_text = font.render("START CREATING", True, (255, 255, 255))
+    btn_rect = btn_text.get_rect(center=btn.center)
+    screen.blit(btn_text, btn_rect)
+
+    # Feature hints
+    hints = [
+        "🎨 Multiple terrain types",
+        "🖌️ Advanced drawing tools",
+        "📐 Layer management system",
+        "⚡ Auto-save & recovery",
+    ]
+
+    hint_y = btn_y + 100
+    for i, hint in enumerate(hints):
+        hint_surf = tiny_font.render(hint, True, colors['text_dim'])
+        hint_x = width // 2 - 200 + (i % 2) * 240
+        hint_y_pos = hint_y + (i // 2) * 25
+        screen.blit(hint_surf, (hint_x, hint_y_pos))
+
+    return btn, title_rect
 
 def draw_canvas_select(screen, width, height, colors, presets, font_large, font, small_font, tiny_font):
     """Enhanced canvas selection screen"""
@@ -634,15 +733,21 @@ def draw_help_panel(screen, width, height, colors, font_large, font, tiny_font):
 
     return [('close', close_btn)]
 
-def draw_layer_panel(screen, width, height, layer_manager, colors, settings, font_large, small_font, tiny_font):
-    """Enhanced multi-layer panel"""
+def draw_layer_panel(screen, width, height, layer_manager, colors, settings, font_large, small_font, tiny_font, custom_pos=None):
+    """Enhanced multi-layer panel - now draggable!"""
     if not layer_manager.layers:
-        return []
+        return [], pygame.Rect(0, 0, 0, 0)
 
     panel_w = 600
     panel_h = min(500, height - 200)
-    panel_x = width // 2 - panel_w // 2
-    panel_y = height - panel_h - 60
+
+    # Use custom position if dragged, otherwise default centered position
+    if custom_pos:
+        panel_x = max(0, min(width - panel_w, custom_pos[0]))
+        panel_y = max(90, min(height - panel_h, custom_pos[1]))
+    else:
+        panel_x = width // 2 - panel_w // 2
+        panel_y = height - panel_h - 60
 
     # Shadow
     panel_rect = pygame.Rect(panel_x, panel_y, panel_w, panel_h)
@@ -661,12 +766,26 @@ def draw_layer_panel(screen, width, height, layer_manager, colors, settings, fon
     y = panel_y + 20
     rects = []
 
+    # Drag handle bar at the top
+    drag_handle = pygame.Rect(panel_x, panel_y, panel_w, 60)
+    drag_handle_hover = drag_handle.collidepoint(mx, my)
+
+    # Add visual indicator for drag handle
+    if drag_handle_hover:
+        drag_indicator = tiny_font.render("⬍ DRAG TO MOVE ⬍", True, colors['accent_hover'])
+    else:
+        drag_indicator = tiny_font.render("⬍ DRAG TO MOVE ⬍", True, colors['text_dim'])
+    drag_rect = drag_indicator.get_rect(center=(panel_x + panel_w // 2, panel_y + 10))
+    screen.blit(drag_indicator, drag_rect)
+
+    rects.append(('drag_handle', drag_handle, 0))
+
     # Title
     title = font_large.render("LAYER MANAGER", True, colors['layer_hover'])
     screen.blit(title, (panel_x + 20, y))
     y += 35
 
-    subtitle = tiny_font.render(f"{len(layer_manager.layers)} layer(s) | Drag to move | Ctrl+Shift+1-9 to toggle", True, colors['text_dim'])
+    subtitle = tiny_font.render(f"{len(layer_manager.layers)} layer(s) | Ctrl+Shift+1-9 to toggle", True, colors['text_dim'])
     screen.blit(subtitle, (panel_x + 20, y))
     y += 25
 
@@ -838,4 +957,4 @@ def draw_layer_panel(screen, width, height, layer_manager, colors, settings, fon
         rects.append((action, btn_rect))
         btn_x += btn_w + 10
 
-    return rects
+    return rects, panel_rect

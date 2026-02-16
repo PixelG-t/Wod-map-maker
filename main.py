@@ -9,6 +9,7 @@ import pygame
 from pygame.locals import *
 import sys
 import math
+import random
 from tkinter import Tk
 import os
 
@@ -19,6 +20,7 @@ from layers import LayerManager
 from canvas import CanvasManager
 from utils import *
 from ui import *
+from easter_eggs import EasterEggManager
 
 def main():
     # Initialize
@@ -49,12 +51,24 @@ def main():
         small_font = pygame.font.Font(None, 14)
         tiny_font = pygame.font.Font(None, 12)
 
+    # Easter egg: 25% chance for alternate welcome screen
+    use_alternate_welcome = random.random() < 0.25
+
     # State
-    current_screen = "canvas_select"
+    current_screen = "welcome" if use_alternate_welcome or random.random() < 0.5 else "canvas_select"
     canvas_manager = None
     layer_manager = LayerManager()
     anim_manager = AnimationManager()
     ui_state = UIState()
+    easter_egg_manager = EasterEggManager()
+
+    # Easter egg tracking
+    terrain_selection_history = []
+    terrain_usage = set()  # Track which terrains have been used
+    undo_counter = 0
+    last_undo_time = 0
+    paint_start_time = None
+    continuous_paint_time = 0
     
     selected_terrain = 0
     brush_size = 8
@@ -75,6 +89,9 @@ def main():
     dragging_alpha_slider = False
     dragging_scale_slider = False
     last_auto_save = 0
+    dragging_layer_panel = False
+    layer_panel_drag_offset = None
+    layer_panel_pos = None
 
     # Zoom
     zoom_level = 1.0
@@ -150,6 +167,11 @@ def main():
                     )
 
             elif event.type == KEYDOWN:
+                # Easter egg: Check Konami code
+                egg_msg = easter_egg_manager.check_konami_code(event.key)
+                if egg_msg:
+                    ui_state.add_notification(egg_msg, 'success', 5000)
+
                 if event.key == K_ESCAPE:
                     if show_overlay_controls:
                         show_overlay_controls = False
@@ -216,15 +238,51 @@ def main():
                         idx = event.key - K_1
                         if idx < len(TERRAINS):
                             selected_terrain = idx
+                            terrain_selection_history.append(idx)
+                            if len(terrain_selection_history) > 10:
+                                terrain_selection_history.pop(0)
+
+                            # Easter egg: Check rainbow sequence
+                            egg_msg = easter_egg_manager.check_terrain_sequence(terrain_selection_history)
+                            if egg_msg:
+                                ui_state.add_notification(egg_msg, 'success', 5000)
 
                     # Tools
-                    elif event.key == K_b: tool = "brush"
-                    elif event.key == K_e: tool = "eraser"
-                    elif event.key == K_f: tool = "fill"
-                    elif event.key == K_r: tool = "rect"
-                    elif event.key == K_l: tool = "line"
-                    elif event.key == K_c: tool = "circle"
-                    elif event.key == K_p: tool = "picker"
+                    elif event.key == K_b:
+                        tool = "brush"
+                        egg_msg = easter_egg_manager.check_tool_cycler(tool)
+                        if egg_msg:
+                            ui_state.add_notification(egg_msg, 'success', 5000)
+                    elif event.key == K_e:
+                        tool = "eraser"
+                        egg_msg = easter_egg_manager.check_tool_cycler(tool)
+                        if egg_msg:
+                            ui_state.add_notification(egg_msg, 'success', 5000)
+                    elif event.key == K_f:
+                        tool = "fill"
+                        egg_msg = easter_egg_manager.check_tool_cycler(tool)
+                        if egg_msg:
+                            ui_state.add_notification(egg_msg, 'success', 5000)
+                    elif event.key == K_r:
+                        tool = "rect"
+                        egg_msg = easter_egg_manager.check_tool_cycler(tool)
+                        if egg_msg:
+                            ui_state.add_notification(egg_msg, 'success', 5000)
+                    elif event.key == K_l:
+                        tool = "line"
+                        egg_msg = easter_egg_manager.check_tool_cycler(tool)
+                        if egg_msg:
+                            ui_state.add_notification(egg_msg, 'success', 5000)
+                    elif event.key == K_c:
+                        tool = "circle"
+                        egg_msg = easter_egg_manager.check_tool_cycler(tool)
+                        if egg_msg:
+                            ui_state.add_notification(egg_msg, 'success', 5000)
+                    elif event.key == K_p:
+                        tool = "picker"
+                        egg_msg = easter_egg_manager.check_tool_cycler(tool)
+                        if egg_msg:
+                            ui_state.add_notification(egg_msg, 'success', 5000)
                     elif event.key == K_o and pygame.key.get_mods() & KMOD_CTRL:
                         if layer_manager.layers:
                             show_overlay_controls = not show_overlay_controls
@@ -251,8 +309,22 @@ def main():
                     # Brush size
                     elif event.key == K_LEFTBRACKET:
                         brush_size = max(MIN_BRUSH, brush_size - 2)
+                        # Check multiple Easter eggs
+                        for check in [easter_egg_manager.check_brush_size_egg,
+                                     easter_egg_manager.check_fibonacci_brush,
+                                     easter_egg_manager.check_binary_brush]:
+                            egg_msg = check(brush_size)
+                            if egg_msg:
+                                ui_state.add_notification(egg_msg, 'success', 5000)
                     elif event.key == K_RIGHTBRACKET:
                         brush_size = min(MAX_BRUSH, brush_size + 2)
+                        # Check multiple Easter eggs
+                        for check in [easter_egg_manager.check_brush_size_egg,
+                                     easter_egg_manager.check_fibonacci_brush,
+                                     easter_egg_manager.check_binary_brush]:
+                            egg_msg = check(brush_size)
+                            if egg_msg:
+                                ui_state.add_notification(egg_msg, 'success', 5000)
 
                     # Undo/Redo
                     elif event.key == K_z and pygame.key.get_mods() & KMOD_CTRL:
@@ -263,6 +335,18 @@ def main():
                             if canvas_manager.undo():
                                 unsaved_changes = True
                                 ui_state.add_notification("Undo", 'accent')
+
+                                # Easter egg: Track undo spam
+                                current_time = pygame.time.get_ticks()
+                                if current_time - last_undo_time < 500:
+                                    undo_counter += 1
+                                else:
+                                    undo_counter = 1
+                                last_undo_time = current_time
+
+                                egg_msg = easter_egg_manager.check_undo_spam(undo_counter)
+                                if egg_msg:
+                                    ui_state.add_notification(egg_msg, 'success', 5000)
                     elif event.key == K_y and pygame.key.get_mods() & KMOD_CTRL:
                         if canvas_manager.redo():
                             ui_state.add_notification("Redo", 'accent')
@@ -276,6 +360,11 @@ def main():
                             unsaved_changes = False
                             delete_recovery_files()
                             ui_state.add_notification(f"Saved: {os.path.basename(result)}", 'success')
+
+                            # Easter egg: Check rapid save
+                            egg_msg = easter_egg_manager.check_rapid_save()
+                            if egg_msg:
+                                ui_state.add_notification(egg_msg, 'success', 5000)
                         elif result is False:
                             ui_state.add_notification("Save failed", 'error')
                     elif event.key == K_n and pygame.key.get_mods() & KMOD_CTRL:
@@ -293,12 +382,32 @@ def main():
                             zoom_level, zoom_offset_x, zoom_offset_y,
                             MIN_ZOOM, MAX_ZOOM
                         )
+                        # Check zoom Easter eggs
+                        egg_msg = easter_egg_manager.check_zoom_level(zoom_level)
+                        if egg_msg:
+                            ui_state.add_notification(egg_msg, 'success', 5000)
+                        egg_msg = easter_egg_manager.check_golden_ratio_zoom(zoom_level)
+                        if egg_msg:
+                            ui_state.add_notification(egg_msg, 'success', 5000)
+                        egg_msg = easter_egg_manager.check_spam_zoom()
+                        if egg_msg:
+                            ui_state.add_notification(egg_msg, 'success', 5000)
                     elif event.key == K_MINUS:
                         zoom_level, zoom_offset_x, zoom_offset_y = zoom_at_mouse(
                             mx, my, 1/1.25, base_canvas_x, base_canvas_y,
                             zoom_level, zoom_offset_x, zoom_offset_y,
                             MIN_ZOOM, MAX_ZOOM
                         )
+                        # Check zoom Easter eggs
+                        egg_msg = easter_egg_manager.check_zoom_level(zoom_level)
+                        if egg_msg:
+                            ui_state.add_notification(egg_msg, 'success', 5000)
+                        egg_msg = easter_egg_manager.check_golden_ratio_zoom(zoom_level)
+                        if egg_msg:
+                            ui_state.add_notification(egg_msg, 'success', 5000)
+                        egg_msg = easter_egg_manager.check_spam_zoom()
+                        if egg_msg:
+                            ui_state.add_notification(egg_msg, 'success', 5000)
 
             elif event.type == MOUSEBUTTONDOWN and event.button == 1:
                 # Handle settings panel
@@ -329,8 +438,8 @@ def main():
                             break
 
                 elif show_overlay_controls and layer_manager.layers:
-                    layer_rects = draw_layer_panel(screen, WIDTH, HEIGHT, layer_manager,
-                                                   COLORS, settings, font_large, small_font, tiny_font)
+                    layer_rects, panel_rect = draw_layer_panel(screen, WIDTH, HEIGHT, layer_manager,
+                                                   COLORS, settings, font_large, small_font, tiny_font, layer_panel_pos)
                     handled = False
 
                     for item in layer_rects:
@@ -338,6 +447,11 @@ def main():
                             name, rect, idx = item
                             if name == 'layer_select' and rect.collidepoint(mx, my):
                                 layer_manager.current_idx = idx
+                                handled = True
+                                break
+                            elif name == 'drag_handle' and rect.collidepoint(mx, my):
+                                dragging_layer_panel = True
+                                layer_panel_drag_offset = (mx - panel_rect.x, my - panel_rect.y)
                                 handled = True
                                 break
                         else:
@@ -377,6 +491,7 @@ def main():
                                             show_overlay_controls = False
                                 elif name == 'close':
                                     show_overlay_controls = False
+                                    layer_panel_pos = None
                                 elif name == 'add_layer':
                                     result, size = layer_manager.load_overlay_image(
                                         canvas_manager.width, canvas_manager.height
@@ -393,6 +508,11 @@ def main():
                                                 f"Layer added",
                                                 'success', 3000
                                             )
+
+                                        # Easter egg: Check layer count
+                                        egg_msg = easter_egg_manager.check_layer_count(len(layer_manager.layers))
+                                        if egg_msg:
+                                            ui_state.add_notification(egg_msg, 'success', 5000)
                                 handled = True
                                 break
 
@@ -412,6 +532,14 @@ def main():
                                 dragging_overlay = True
                                 overlay_drag_start = (mx - layer.pos[0] * zoom_level,
                                                     my - layer.pos[1] * zoom_level)
+
+                elif current_screen == "welcome":
+                    start_btn, title_rect = draw_welcome_screen(screen, WIDTH, HEIGHT, COLORS,
+                                                                font_large, font, small_font, tiny_font,
+                                                                use_alternate_welcome)
+                    if start_btn.collidepoint(mx, my):
+                        current_screen = "canvas_select"
+                        ui_state.add_notification("Welcome to WoD Map Maker!", 'accent', 2000)
 
                 elif current_screen == "canvas_select":
                     rects = draw_canvas_select(screen, WIDTH, HEIGHT, COLORS, PRESETS,
@@ -439,6 +567,15 @@ def main():
                                 save_settings(settings)
                                 ui_state.add_notification(f"Canvas created: {w}x{h}", 'success')
                                 current_screen = "editor"
+
+                                # Easter eggs: Check canvas dimensions
+                                egg_msg = easter_egg_manager.check_perfect_square_canvas(w, h)
+                                if egg_msg:
+                                    ui_state.add_notification(egg_msg, 'success', 5000)
+
+                                egg_msg = easter_egg_manager.check_420_69_canvas(w, h)
+                                if egg_msg:
+                                    ui_state.add_notification(egg_msg, 'success', 5000)
                             break
 
                 elif current_screen == "editor":
@@ -527,6 +664,14 @@ def main():
                         # Canvas interaction
                         if not clicked:
                             x, y = screen_to_canvas_func(mx, my)
+
+                            # Easter egg: Check canvas corner clicks
+                            canvas_rect = pygame.Rect(base_canvas_x + zoom_offset_x, base_canvas_y + zoom_offset_y,
+                                                     int(canvas_manager.width * zoom_level), int(canvas_manager.height * zoom_level))
+                            egg_msg = easter_egg_manager.check_canvas_corner_clicks((mx, my), canvas_rect)
+                            if egg_msg:
+                                ui_state.add_notification(egg_msg, 'success', 5000)
+
                             if 0 <= x < canvas_manager.width and 0 <= y < canvas_manager.height:
                                 if pygame.key.get_pressed()[K_SPACE]:
                                     panning = True
@@ -548,11 +693,18 @@ def main():
                                     shape_start = (mx, my)
                                 elif tool == "brush":
                                     painting = True
+                                    paint_start_time = pygame.time.get_ticks()
                                     canvas_manager.save_state()
                                     last_paint_pos = (mx, my)
                                     canvas_manager.paint(x, y, brush_size, selected_terrain,
                                                        settings.get('smooth_brush', True))
                                     unsaved_changes = True
+
+                                    # Track terrain usage
+                                    terrain_usage.add(selected_terrain)
+                                    egg_msg = easter_egg_manager.check_all_terrain_paint(terrain_usage)
+                                    if egg_msg:
+                                        ui_state.add_notification(egg_msg, 'success', 5000)
                                 elif tool == "eraser":
                                     painting = True
                                     canvas_manager.save_state()
@@ -560,17 +712,41 @@ def main():
                                     canvas_manager.erase(x, y, brush_size)
                                     unsaved_changes = True
 
+            elif event.type == MOUSEBUTTONDOWN and event.button == 2:
+                # Middle mouse button - Easter egg check
+                if current_screen == "editor" and canvas_manager:
+                    screen_to_canvas_func = get_screen_to_canvas()
+                    x, y = screen_to_canvas_func(mx, my)
+                    egg_msg = easter_egg_manager.check_middle_click(
+                        canvas_manager.width, canvas_manager.height, x, y
+                    )
+                    if egg_msg:
+                        ui_state.add_notification(egg_msg, 'success', 5000)
+
             elif event.type == MOUSEBUTTONDOWN and event.button == 3:
                 if current_screen == "editor":
                     screen_to_canvas_func = get_screen_to_canvas()
                     x, y = screen_to_canvas_func(mx, my)
+
+                    # Easter eggs: Check various coordinate Easter eggs
+                    for check in [easter_egg_manager.check_coordinates,
+                                 easter_egg_manager.check_666_coordinates,
+                                 easter_egg_manager.check_1337_coordinates,
+                                 easter_egg_manager.check_palindrome_coordinates]:
+                        egg_msg = check(x, y)
+                        if egg_msg:
+                            ui_state.add_notification(egg_msg, 'success', 5000)
+
                     idx, name = canvas_manager.pick_color(x, y)
                     if idx is not None:
                         selected_terrain = idx
                         ui_state.add_notification(f"Picked: {name}", 'accent')
 
             elif event.type == MOUSEBUTTONUP and event.button == 1:
-                if dragging_alpha_slider:
+                if dragging_layer_panel:
+                    dragging_layer_panel = False
+                    layer_panel_drag_offset = None
+                elif dragging_alpha_slider:
                     dragging_alpha_slider = False
                 elif dragging_scale_slider:
                     dragging_scale_slider = False
@@ -604,6 +780,9 @@ def main():
                     last_paint_pos = None
 
         # Continuous interactions
+        if dragging_layer_panel and layer_panel_drag_offset:
+            layer_panel_pos = (mx - layer_panel_drag_offset[0], my - layer_panel_drag_offset[1])
+
         if dragging_slider and current_screen == "editor":
             terrain_rects, tool_rects, slider_rect = draw_side_panel(
                 screen, WIDTH, HEIGHT, selected_terrain, tool, brush_size,
@@ -615,8 +794,8 @@ def main():
         if dragging_alpha_slider:
             layer = layer_manager.get_current_layer()
             if layer:
-                layer_rects = draw_layer_panel(screen, WIDTH, HEIGHT, layer_manager,
-                                               COLORS, settings, font_large, small_font, tiny_font)
+                layer_rects, panel_rect = draw_layer_panel(screen, WIDTH, HEIGHT, layer_manager,
+                                               COLORS, settings, font_large, small_font, tiny_font, layer_panel_pos)
                 for item in layer_rects:
                     if len(item) == 2:
                         name, rect = item
@@ -629,8 +808,8 @@ def main():
         if dragging_scale_slider:
             layer = layer_manager.get_current_layer()
             if layer:
-                layer_rects = draw_layer_panel(screen, WIDTH, HEIGHT, layer_manager,
-                                               COLORS, settings, font_large, small_font, tiny_font)
+                layer_rects, panel_rect = draw_layer_panel(screen, WIDTH, HEIGHT, layer_manager,
+                                               COLORS, settings, font_large, small_font, tiny_font, layer_panel_pos)
                 for item in layer_rects:
                     if len(item) == 2:
                         name, rect = item
@@ -656,9 +835,16 @@ def main():
             pan_start = (mx, my)
 
         if painting and tool in ["brush", "eraser"] and current_screen == "editor":
+            # Easter egg: Track continuous painting
+            if paint_start_time:
+                continuous_paint_time = pygame.time.get_ticks() - paint_start_time
+                egg_msg = easter_egg_manager.check_paint_time(continuous_paint_time)
+                if egg_msg:
+                    ui_state.add_notification(egg_msg, 'success', 5000)
+
             screen_to_canvas_func = get_screen_to_canvas()
             x, y = screen_to_canvas_func(mx, my)
-            
+
             if tool == "brush":
                 canvas_manager.paint(x, y, brush_size, selected_terrain,
                                    settings.get('smooth_brush', True))
@@ -679,18 +865,31 @@ def main():
                     else:
                         canvas_manager.erase(x, y, brush_size)
             last_paint_pos = (mx, my)
+        else:
+            paint_start_time = None
+
+        # Update Easter egg states
+        easter_egg_manager.update_all_modes()
 
         # Draw
-        if current_screen == "canvas_select":
+        if current_screen == "welcome":
+            draw_welcome_screen(screen, WIDTH, HEIGHT, COLORS,
+                              font_large, font, small_font, tiny_font, use_alternate_welcome)
+        elif current_screen == "canvas_select":
             draw_canvas_select(screen, WIDTH, HEIGHT, COLORS, PRESETS,
                              font_large, font, small_font, tiny_font)
         else:
             # Draw editor
-            screen.fill(COLORS['bg'])
+            # Apply shake offset if shake mode is active
+            shake_x, shake_y = easter_egg_manager.get_shake_offset()
+
+            # Apply inverted colors if inverted mode is active
+            bg_color = easter_egg_manager.get_inverted_color(COLORS['bg'])
+            screen.fill(bg_color)
 
             # Canvas rendering
-            canvas_x = base_canvas_x + zoom_offset_x
-            canvas_y = base_canvas_y + zoom_offset_y
+            canvas_x = base_canvas_x + zoom_offset_x + shake_x
+            canvas_y = base_canvas_y + zoom_offset_y + shake_y
 
             zoomed_w = int(canvas_manager.width * zoom_level)
             zoomed_h = int(canvas_manager.height * zoom_level)
@@ -802,7 +1001,7 @@ def main():
             # Layer panel
             if show_overlay_controls and layer_manager.layers:
                 draw_layer_panel(screen, WIDTH, HEIGHT, layer_manager,
-                               COLORS, settings, font_large, small_font, tiny_font)
+                               COLORS, settings, font_large, small_font, tiny_font, layer_panel_pos)
 
             # Settings panel
             if show_settings:
@@ -813,6 +1012,20 @@ def main():
             if show_help:
                 draw_help_panel(screen, WIDTH, HEIGHT, COLORS,
                               font_large, font, tiny_font)
+
+            # Easter egg visual effects
+            easter_egg_manager.draw_party_effects(screen, WIDTH, HEIGHT)
+            easter_egg_manager.draw_sparkles(screen, WIDTH, HEIGHT)
+
+            canvas_rect = pygame.Rect(canvas_x, canvas_y, zoomed_w, zoomed_h)
+            easter_egg_manager.draw_matrix_effect(screen, tiny_font, canvas_rect)
+
+            # Easter egg progress indicator
+            if easter_egg_manager.get_discovered_count() > 0:
+                progress_msg = easter_egg_manager.get_progress_message()
+                progress_color = easter_egg_manager.get_inverted_color(COLORS['accent_hover'])
+                progress_surf = tiny_font.render(progress_msg, True, progress_color)
+                screen.blit(progress_surf, (WIDTH - progress_surf.get_width() - 20, 95))
 
         pygame.display.flip()
 

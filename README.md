@@ -1,15 +1,26 @@
-# War of Dots Map Editor 
+# War of Dots Map Editor
 
-A powerful map editor with multi-layer overlay support and modern UI design.
+A powerful map editor with multi-layer overlay support, modern UI design, and hidden surprises!
 
-![Version](https://img.shields.io/badge/version-2.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.5-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.7+-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-orange.svg)
+![Easter Eggs](https://img.shields.io/badge/easter_eggs-21-purple.svg)
+
+## 🆕 What's New in v2.5 - "The Fun Update"
+
+- **🎯 Draggable Layer Manager** - Move the layer panel anywhere to see your work!
+- **✨ Animated Welcome Screen** - 25% chance for a special rainbow edition
+- **🥚 21 Hidden Easter Eggs** - Discover secret features and visual effects!
+- **🎬 Enhanced Animations** - Smoother, more engaging UI throughout
+
+[**See WHATS_NEW.md for full details!**](WHATS_NEW.md) | [**Easter Egg Guide →**](EASTER_EGGS.md)
 
 ## Features
 
 ### Core Features
 - **Modern Gradient UI** with smooth animations
+- **Draggable Layer Manager** - position it anywhere on screen!
 - **Multi-layer overlay system** for precise map building
 - **Minimap** for easy navigation when zoomed in
 - **8 terrain types** with instant hotkey access
@@ -18,9 +29,11 @@ A powerful map editor with multi-layer overlay support and modern UI design.
 - **Auto-save** with crash recovery
 - **Zoom and pan** with smooth controls
 - **Grid overlay** with snap-to-grid option
+- **21 Secret Easter Eggs** - find them all for special effects!
 
 ### Advanced Features
 - **Layer Management**
+  - **Draggable layer panel** - move it out of the way!
   - Multiple overlay layers with independent controls
   - Opacity and scale adjustments per layer
   - Layer visibility toggles (Ctrl+Shift+1-9)
@@ -184,7 +197,18 @@ MIT License - feel free to use in your projects!
 
 ## Changelog
 
-### Version 2.0 
+### Version 2.5 - "The Fun Update"
+- **Draggable layer manager panel** - finally!
+- **Animated welcome screen** with 25% special edition variant
+- **21 hidden Easter eggs** with special visual effects
+- Enhanced animations throughout the UI
+- Party mode, disco mode, rainbow brush, matrix rain, inverted colors, screen shake, and sparkles!
+- Easter egg progress tracker
+- Complete Easter egg guide with hints (EASTER_EGGS.md)
+- Improved user experience and engagement
+- Better workflow for layer positioning
+
+### Version 2.0
 - Added multi-layer overlay system
 - New modern gradient UI
 - Minimap navigation
