@@ -1,4 +1,4 @@
-# War of Dots Map Editor - Enhanced Edition
+# War of Dots Map Editor 
 
 A powerful map editor with multi-layer overlay support and modern UI design.
 
